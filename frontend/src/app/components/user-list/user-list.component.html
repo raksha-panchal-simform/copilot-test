@@ -1,0 +1,80 @@
+<div class="user-container">
+  <h1>User Management</h1>
+
+  <div *ngIf="successMessage" class="success-banner">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    {{ errorMessage }}
+  </div>
+
+  <button class="btn btn-primary" (click)="openCreateForm()">+ Add User</button>
+
+  <!-- Create / Edit Form -->
+  <div *ngIf="showForm" class="form-card">
+    <h2>{{ editingUser ? 'Edit User' : 'Create User' }}</h2>
+    <form (ngSubmit)="submitForm()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" type="text" [(ngModel)]="formData.name" name="name" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" [(ngModel)]="formData.email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="age">Age (optional)</label>
+        <input id="age" type="number" [(ngModel)]="formData.age" name="age" />
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ editingUser ? 'Update' : 'Create' }}</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">Loading users...</div>
+
+  <!-- User Table -->
+  <table *ngIf="!loading && users.length > 0" class="user-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Age</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.age ?? '-' }}</td>
+        <td>{{ user.createdAt | date:'short' }}</td>
+        <td>
+          <button class="btn btn-small" (click)="openEditForm(user)">Edit</button>
+          <button class="btn btn-small btn-danger" (click)="deleteUser(user.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && users.length === 0" class="empty-state">
+    No users found. Click "+ Add User" to create one.
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="pagination && pagination.totalPages > 1" class="pagination">
+    <button
+      *ngFor="let p of [].constructor(pagination.totalPages); let i = index"
+      [class.active]="pagination.page === i + 1"
+      (click)="goToPage(i + 1)"
+      class="btn btn-small"
+    >
+      {{ i + 1 }}
+    </button>
+  </div>
+</div>
