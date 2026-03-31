@@ -77,8 +77,14 @@ export class UserListComponent implements OnInit {
   submitForm(): void {
     this.errorMessage = "";
 
+    const trimmedData = {
+      ...this.formData,
+      name: this.formData.name?.trim() ?? "",
+      email: this.formData.email?.trim() ?? "",
+    };
+
     if (this.editingUser) {
-      this.userService.updateUser(this.editingUser.id, this.formData).subscribe({
+      this.userService.updateUser(this.editingUser.id, trimmedData).subscribe({
         next: (response) => {
           if (response.success) {
             this.showSuccess(response.message ?? "User updated successfully");
@@ -93,7 +99,7 @@ export class UserListComponent implements OnInit {
         },
       });
     } else {
-      this.userService.createUser(this.formData).subscribe({
+      this.userService.createUser(trimmedData).subscribe({
         next: (response) => {
           if (response.success) {
             this.showSuccess(response.message ?? "User created successfully");

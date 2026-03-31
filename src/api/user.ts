@@ -75,7 +75,9 @@ userRouter.get("/:id", (req: Request, res: Response) => {
 // POST /api/users — Create a new user
 userRouter.post("/", (req: Request, res: Response) => {
   try {
-    const { name, email, age } = req.body;
+    const { age } = req.body;
+    const name = typeof req.body.name === "string" ? req.body.name.trim() : req.body.name;
+    const email = typeof req.body.email === "string" ? req.body.email.trim() : req.body.email;
 
     const errors: string[] = [];
     if (!name || typeof name !== "string") errors.push("name is required and must be a string");
@@ -117,11 +119,15 @@ userRouter.post("/", (req: Request, res: Response) => {
 // PUT /api/users/:id — Update a user
 userRouter.put("/:id", (req: Request, res: Response) => {
   try {
-    const { name, email, age } = req.body;
+    const { age } = req.body;
+    const name = typeof req.body.name === "string" ? req.body.name.trim() : req.body.name;
+    const email = typeof req.body.email === "string" ? req.body.email.trim() : req.body.email;
 
     const errors: string[] = [];
     if (name !== undefined && typeof name !== "string") errors.push("name must be a string");
+    else if (name !== undefined && !name) errors.push("name must be a non-empty string");
     if (email !== undefined && typeof email !== "string") errors.push("email must be a string");
+    else if (email !== undefined && !email) errors.push("email must be a non-empty string");
     if (age !== undefined && typeof age !== "number") errors.push("age must be a number");
 
     if (errors.length > 0) {
