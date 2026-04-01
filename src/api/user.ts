@@ -11,6 +11,29 @@ import {
 
 export const userRouter = Router();
 
+const BIRTHDAY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+function validateBirthday(birthday: unknown): string | null {
+  if (typeof birthday !== "string" || !BIRTHDAY_REGEX.test(birthday)) {
+    return "birthday must be a valid date in YYYY-MM-DD format";
+  }
+  const birthdayDate = new Date(birthday);
+  if (isNaN(birthdayDate.getTime()) || birthdayDate.toISOString().split("T")[0] !== birthday) {
+    return "birthday must be a valid date";
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (birthdayDate > today) {
+    return "birthday must not be in the future";
+  }
+  const minDate = new Date();
+  minDate.setFullYear(minDate.getFullYear() - 150);
+  if (birthdayDate < minDate) {
+    return "birthday is too far in the past";
+  }
+  return null;
+}
+
 // GET /api/users — List all users (paginated)
 userRouter.get("/", (req: Request, res: Response) => {
   try {
@@ -75,12 +98,16 @@ userRouter.get("/:id", (req: Request, res: Response) => {
 // POST /api/users — Create a new user
 userRouter.post("/", (req: Request, res: Response) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, age, birthday } = req.body;
 
     const errors: string[] = [];
     if (!name || typeof name !== "string") errors.push("name is required and must be a string");
     if (!email || typeof email !== "string") errors.push("email is required and must be a string");
     if (age !== undefined && typeof age !== "number") errors.push("age must be a number");
+    if (birthday !== undefined) {
+      const birthdayError = validateBirthday(birthday);
+      if (birthdayError) errors.push(birthdayError);
+    }
 
     if (errors.length > 0) {
       const response: ApiResponse<null> = {
@@ -95,7 +122,7 @@ userRouter.post("/", (req: Request, res: Response) => {
       return;
     }
 
-    const user = createUser({ name, email, age });
+    const user = createUser({ name, email, age, birthday });
     const response: ApiResponse<User> = {
       success: true,
       data: user,
@@ -117,12 +144,16 @@ userRouter.post("/", (req: Request, res: Response) => {
 // PUT /api/users/:id — Update a user
 userRouter.put("/:id", (req: Request, res: Response) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, age, birthday } = req.body;
 
     const errors: string[] = [];
     if (name !== undefined && typeof name !== "string") errors.push("name must be a string");
     if (email !== undefined && typeof email !== "string") errors.push("email must be a string");
     if (age !== undefined && typeof age !== "number") errors.push("age must be a number");
+    if (birthday !== undefined) {
+      const birthdayError = validateBirthday(birthday);
+      if (birthdayError) errors.push(birthdayError);
+    }
 
     if (errors.length > 0) {
       const response: ApiResponse<null> = {
@@ -137,7 +168,7 @@ userRouter.put("/:id", (req: Request, res: Response) => {
       return;
     }
 
-    const user = updateUser(req.params.id, { name, email, age });
+    const user = updateUser(req.params.id, { name, email, age, birthday });
     if (!user) {
       const response: ApiResponse<null> = {
         success: false,
