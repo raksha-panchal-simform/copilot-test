@@ -19,6 +19,12 @@ export interface UpdateUserRequest {
   age?: number;
 }
 
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

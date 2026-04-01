@@ -6,6 +6,7 @@ import {
   User,
   CreateUserRequest,
   UpdateUserRequest,
+  RegisterRequest,
 } from "../models/user.model";
 
 @Injectable({
@@ -13,6 +14,7 @@ import {
 })
 export class UserService {
   private readonly apiUrl = "http://localhost:3000/api/users";
+  private readonly registerUrl = "http://localhost:3000/api/register";
 
   constructor(private readonly http: HttpClient) {}
 
@@ -37,5 +39,9 @@ export class UserService {
 
   deleteUser(id: string): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.apiUrl}/${id}`);
+  }
+
+  register(data: RegisterRequest): Observable<ApiResponse<User>> {
+    return this.http.post<ApiResponse<User>>(this.registerUrl, data);
   }
 }
