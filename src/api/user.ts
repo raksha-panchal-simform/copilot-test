@@ -75,12 +75,13 @@ userRouter.get("/:id", (req: Request, res: Response) => {
 // POST /api/users — Create a new user
 userRouter.post("/", (req: Request, res: Response) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, age, birthday } = req.body;
 
     const errors: string[] = [];
     if (!name || typeof name !== "string") errors.push("name is required and must be a string");
     if (!email || typeof email !== "string") errors.push("email is required and must be a string");
     if (age !== undefined && typeof age !== "number") errors.push("age must be a number");
+    if (birthday !== undefined && (typeof birthday !== "string" || isNaN(Date.parse(birthday)))) errors.push("birthday must be a valid date string");
 
     if (errors.length > 0) {
       const response: ApiResponse<null> = {
@@ -95,7 +96,7 @@ userRouter.post("/", (req: Request, res: Response) => {
       return;
     }
 
-    const user = createUser({ name, email, age });
+    const user = createUser({ name, email, age, birthday });
     const response: ApiResponse<User> = {
       success: true,
       data: user,
@@ -117,12 +118,13 @@ userRouter.post("/", (req: Request, res: Response) => {
 // PUT /api/users/:id — Update a user
 userRouter.put("/:id", (req: Request, res: Response) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, age, birthday } = req.body;
 
     const errors: string[] = [];
     if (name !== undefined && typeof name !== "string") errors.push("name must be a string");
     if (email !== undefined && typeof email !== "string") errors.push("email must be a string");
     if (age !== undefined && typeof age !== "number") errors.push("age must be a number");
+    if (birthday !== undefined && (typeof birthday !== "string" || isNaN(Date.parse(birthday)))) errors.push("birthday must be a valid date string");
 
     if (errors.length > 0) {
       const response: ApiResponse<null> = {
@@ -137,7 +139,7 @@ userRouter.put("/:id", (req: Request, res: Response) => {
       return;
     }
 
-    const user = updateUser(req.params.id, { name, email, age });
+    const user = updateUser(req.params.id, { name, email, age, birthday });
     if (!user) {
       const response: ApiResponse<null> = {
         success: false,

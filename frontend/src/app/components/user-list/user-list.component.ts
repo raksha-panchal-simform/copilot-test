@@ -64,7 +64,7 @@ export class UserListComponent implements OnInit {
 
   openEditForm(user: User): void {
     this.editingUser = user;
-    this.formData = { name: user.name, email: user.email, age: user.age };
+    this.formData = { name: user.name, email: user.email, age: user.age, birthday: user.birthday };
     this.showForm = true;
   }
 
