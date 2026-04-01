@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "preToolUse": [
+      {
+        "name": "log-tool-usage",
+        "command": "echo \"[TOOL USE] $(date) Tool: $TOOL_NAME Input: $TOOL_INPUT\" >> .github/hooks/tool-logs.txt"
+      }
+    ],
+    "sessionStart": [
+      {
+        "name": "log-session-start",
+        "command": "echo \"[SESSION START] $(date) Agent session started\" >> .github/hooks/session-logs.txt"
+      }
+    ]
+  }
+}
