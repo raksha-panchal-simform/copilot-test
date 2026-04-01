@@ -15,6 +15,14 @@ export function findUserById(id: string): User | undefined {
   return users.get(id);
 }
 
+export function findUserByEmail(email: string): User | undefined {
+  const normalized = email.toLowerCase();
+  for (const user of users.values()) {
+    if (user.email === normalized) return user;
+  }
+  return undefined;
+}
+
 export function createUser(data: CreateUserRequest): User {
   const now = new Date().toISOString();
   const user: User = {

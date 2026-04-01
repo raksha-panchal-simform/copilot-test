@@ -4,10 +4,24 @@ import { User } from "./user.model";
 import {
   findAllUsers,
   findUserById,
+  findUserByEmail,
   createUser,
   updateUser,
   deleteUser,
 } from "./user.service";
+
+function isValidEmail(email: string): boolean {
+  if (email.length > 254) return false;
+  const atIndex = email.indexOf("@");
+  if (atIndex <= 0 || atIndex !== email.lastIndexOf("@")) return false;
+  const local = email.slice(0, atIndex);
+  const domain = email.slice(atIndex + 1);
+  if (local.length === 0 || local.length > 64) return false;
+  if (domain.length === 0) return false;
+  const dotIndex = domain.lastIndexOf(".");
+  if (dotIndex <= 0 || dotIndex === domain.length - 1) return false;
+  return !/\s/.test(email);
+}
 
 export const userRouter = Router();
 
@@ -78,9 +92,28 @@ userRouter.post("/", (req: Request, res: Response) => {
     const { name, email, age } = req.body;
 
     const errors: string[] = [];
-    if (!name || typeof name !== "string") errors.push("name is required and must be a string");
-    if (!email || typeof email !== "string") errors.push("email is required and must be a string");
-    if (age !== undefined && typeof age !== "number") errors.push("age must be a number");
+
+    if (!name || typeof name !== "string") {
+      errors.push("name is required and must be a string");
+    } else if (name.trim().length === 0) {
+      errors.push("name must not be empty or whitespace");
+    } else if (name.trim().length > 100) {
+      errors.push("name must not exceed 100 characters");
+    }
+
+    if (!email || typeof email !== "string") {
+      errors.push("email is required and must be a string");
+    } else if (!isValidEmail(email)) {
+      errors.push("email must be a valid email address");
+    }
+
+    if (age !== undefined) {
+      if (typeof age !== "number" || !Number.isInteger(age)) {
+        errors.push("age must be an integer");
+      } else if (age < 0 || age > 150) {
+        errors.push("age must be between 0 and 150");
+      }
+    }
 
     if (errors.length > 0) {
       const response: ApiResponse<null> = {
@@ -95,7 +128,19 @@ userRouter.post("/", (req: Request, res: Response) => {
       return;
     }
 
-    const user = createUser({ name, email, age });
+    if (findUserByEmail(email.toLowerCase())) {
+      const response: ApiResponse<null> = {
+        success: false,
+        error: {
+          code: "EMAIL_ALREADY_EXISTS",
+          message: "A user with this email address already exists",
+        },
+      };
+      res.status(409).json(response);
+      return;
+    }
+
+    const user = createUser({ name: name.trim(), email: email.toLowerCase(), age });
     const response: ApiResponse<User> = {
       success: true,
       data: user,
