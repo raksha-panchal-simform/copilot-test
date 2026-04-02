@@ -76,6 +76,8 @@ Typical endpoints:
 - `PUT /api/users/:id`
 - `DELETE /api/users/:id`
 
+For full details on the user authentication API (signup, login, error codes, and response format), see [AUTH_API.md](./AUTH_API.md).
+
 ## Build Backend for Production
 
 ```bash
