@@ -22,6 +22,7 @@ export function createUser(data: CreateUserRequest): User {
     name: data.name,
     email: data.email,
     age: data.age,
+    birthday: data.birthday,
     createdAt: now,
     updatedAt: now,
   };
@@ -38,6 +39,7 @@ export function updateUser(id: string, data: UpdateUserRequest): User | undefine
     ...(data.name !== undefined && { name: data.name }),
     ...(data.email !== undefined && { email: data.email }),
     ...(data.age !== undefined && { age: data.age }),
+    ...(data.birthday !== undefined && { birthday: data.birthday }),
     updatedAt: new Date().toISOString(),
   };
   users.set(id, updated);
