@@ -1,0 +1,71 @@
+<div class="register-container">
+  <h2>Create an Account</h2>
+
+  <div *ngIf="successMessage" class="success-banner">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    {{ errorMessage }}
+  </div>
+
+  <form #registerForm="ngForm" (ngSubmit)="submitForm(registerForm)" novalidate>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        id="username"
+        type="text"
+        name="username"
+        [(ngModel)]="formData.username"
+        #username="ngModel"
+        required
+        [class.input-error]="username.invalid && username.touched"
+      />
+      <span *ngIf="username.invalid && username.touched" class="field-error">
+        Username is required.
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        [(ngModel)]="formData.email"
+        #email="ngModel"
+        required
+        email
+        [class.input-error]="email.invalid && email.touched"
+      />
+      <span *ngIf="email.invalid && email.touched" class="field-error">
+        <span *ngIf="email.errors?.['required']">Email is required.</span>
+        <span *ngIf="email.errors?.['email']">Please enter a valid email address.</span>
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        [(ngModel)]="formData.password"
+        #password="ngModel"
+        required
+        minlength="8"
+        [class.input-error]="password.invalid && password.touched"
+      />
+      <span *ngIf="password.invalid && password.touched" class="field-error">
+        <span *ngIf="password.errors?.['required']">Password is required.</span>
+        <span *ngIf="password.errors?.['minlength']">Password must be at least 8 characters.</span>
+      </span>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
+    </div>
+  </form>
+</div>
